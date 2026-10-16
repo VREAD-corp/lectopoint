@@ -1,8 +1,98 @@
 [
-  { "slug": "le-petit-poucet", "title": "Le Petit Poucet", "author": "Charles Perrault", "authorDates": "1628-1703", "published": "1697", "level": "6e",
-    "source": "Wikisource, Contes de Perrault, éd. Casterman 1902 (orthographe moderne) ; moralité d’après l’édition originale de 1697", "url": "https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)/Le_Petit_Poucet" },
-  { "slug": "la-chevre-de-monsieur-seguin", "title": "La Chèvre de monsieur Seguin", "author": "Alphonse Daudet", "authorDates": "1840-1897", "published": "1866 (Lettres de mon moulin, 1869)", "level": "6e",
-    "source": "Wikisource, Lettres de mon moulin", "url": "https://fr.wikisource.org/wiki/Lettres_de_mon_moulin/La_ch%C3%A8vre_de_monsieur_Seguin" },
-  { "slug": "la-parure", "title": "La Parure", "author": "Guy de Maupassant", "authorDates": "1850-1893", "published": "1884", "level": "4e",
-    "source": "Wikisource, Contes du jour et de la nuit, éd. Flammarion 1885", "url": "https://fr.wikisource.org/wiki/Contes_du_jour_et_de_la_nuit_(%C3%A9d._Flammarion,_1885)/La_Parure" }
+  {
+    "slug": "le-petit-poucet",
+    "title": "Le Petit Poucet",
+    "author": "Charles Perrault",
+    "authorDates": "1628-1703",
+    "published": "1697",
+    "level": "6e",
+    "source": "Wikisource, Contes de Perrault, éd. Casterman 1902 (orthographe moderne) ; moralité d’après l’édition originale de 1697",
+    "url": "https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)/Le_Petit_Poucet"
+  },
+  {
+    "slug": "la-chevre-de-monsieur-seguin",
+    "title": "La Chèvre de monsieur Seguin",
+    "author": "Alphonse Daudet",
+    "authorDates": "1840-1897",
+    "published": "1866 (Lettres de mon moulin, 1869)",
+    "level": "6e",
+    "source": "Wikisource, Lettres de mon moulin",
+    "url": "https://fr.wikisource.org/wiki/Lettres_de_mon_moulin/La_ch%C3%A8vre_de_monsieur_Seguin"
+  },
+  {
+    "slug": "la-parure",
+    "title": "La Parure",
+    "author": "Guy de Maupassant",
+    "authorDates": "1850-1893",
+    "published": "1884",
+    "level": "4e",
+    "source": "Wikisource, Contes du jour et de la nuit, éd. Flammarion 1885",
+    "url": "https://fr.wikisource.org/wiki/Contes_du_jour_et_de_la_nuit_(%C3%A9d._Flammarion,_1885)/La_Parure"
+  },
+  {
+    "slug": "les-fourberies-de-scapin",
+    "title": "Les Fourberies de Scapin",
+    "author": "Molière",
+    "authorDates": "1622-1673",
+    "published": "1671",
+    "level": "5e",
+    "source": "Wikisource, d’après les Œuvres complètes de Molière, édition Charles Louandre, Charpentier, 1910, tome III",
+    "url": "https://fr.wikisource.org/wiki/Les_Fourberies_de_Scapin/%C3%89dition_Louandre,_1910",
+    "guide": "https://outils.vread.fr/lectoguide/les-fourberies-de-scapin/"
+  },
+  {
+    "slug": "mateo-falcone",
+    "title": "Mateo Falcone",
+    "author": "Prosper Mérimée",
+    "authorDates": "1803-1870",
+    "published": "1829",
+    "level": "4e",
+    "source": "Wikisource, d’après Colomba et autres contes et nouvelles, Charpentier, 1845",
+    "url": "https://fr.wikisource.org/wiki/Colomba_et_autres_contes_et_nouvelles/Mateo_Falcone",
+    "guide": "https://outils.vread.fr/lectoguide/mateo-falcone/"
+  },
+  {
+    "slug": "la-venus-d-ille",
+    "title": "La Vénus d’Ille",
+    "author": "Prosper Mérimée",
+    "authorDates": "1803-1870",
+    "published": "1837",
+    "level": "4e",
+    "source": "Wikisource, d’après Colomba et autres contes et nouvelles, Charpentier, 1845",
+    "url": "https://fr.wikisource.org/wiki/Colomba_et_autres_contes_et_nouvelles/La_V%C3%A9nus_d%E2%80%99Ille",
+    "guide": "https://outils.vread.fr/lectoguide/la-venus-d-ille/"
+  },
+  {
+    "slug": "le-horla",
+    "title": "Le Horla",
+    "author": "Guy de Maupassant",
+    "authorDates": "1850-1893",
+    "published": "1887",
+    "level": "4e",
+    "source": "Wikisource, d’après le recueil Le Horla, Paul Ollendorff, 1895 (version de 1887)",
+    "url": "https://fr.wikisource.org/wiki/Le_Horla_(recueil,_Ollendorff_1895)/Le_Horla",
+    "guide": "https://outils.vread.fr/lectoguide/le-horla/"
+  },
+  {
+    "slug": "claude-gueux",
+    "title": "Claude Gueux",
+    "author": "Victor Hugo",
+    "authorDates": "1802-1885",
+    "published": "1834",
+    "level": "3e",
+    "source": "Wikisource, d’après les Œuvres complètes de Victor Hugo, Roman, tome I, Imprimerie nationale et Ollendorff, Paris, 1910",
+    "url": "https://fr.wikisource.org/wiki/Claude_Gueux",
+    "guide": "https://outils.vread.fr/lectoguide/claude-gueux/"
+  },
+  {
+    "slug": "le-menteur",
+    "title": "Le Menteur",
+    "author": "Pierre Corneille",
+    "authorDates": "1606-1684",
+    "published": "1644",
+    "level": "Première (bac de français)",
+    "source": "Wikisource, d'après Œuvres de P. Corneille, édition Ch. Marty-Laveaux, Hachette, 1862, tome IV",
+    "url": "https://fr.wikisource.org/wiki/Le_Menteur_(Corneille,_Marty-Laveaux,_1862)",
+    "guide": "https://outils.vread.fr/lectoguide/le-menteur/"
+  }
 ]
