@@ -1,0 +1,8 @@
+[
+  { "slug": "le-petit-poucet", "title": "Le Petit Poucet", "author": "Charles Perrault", "authorDates": "1628-1703", "published": "1697", "level": "6e",
+    "source": "Wikisource, Contes de Perrault, éd. Casterman 1902 (orthographe moderne) ; moralité d’après l’édition originale de 1697", "url": "https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)/Le_Petit_Poucet" },
+  { "slug": "la-chevre-de-monsieur-seguin", "title": "La Chèvre de monsieur Seguin", "author": "Alphonse Daudet", "authorDates": "1840-1897", "published": "1866 (Lettres de mon moulin, 1869)", "level": "6e",
+    "source": "Wikisource, Lettres de mon moulin", "url": "https://fr.wikisource.org/wiki/Lettres_de_mon_moulin/La_ch%C3%A8vre_de_monsieur_Seguin" },
+  { "slug": "la-parure", "title": "La Parure", "author": "Guy de Maupassant", "authorDates": "1850-1893", "published": "1884", "level": "4e",
+    "source": "Wikisource, Contes du jour et de la nuit, éd. Flammarion 1885", "url": "https://fr.wikisource.org/wiki/Contes_du_jour_et_de_la_nuit_(%C3%A9d._Flammarion,_1885)/La_Parure" }
+]

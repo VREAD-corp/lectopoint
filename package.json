@@ -1,0 +1,18 @@
+{
+  "name": "lectopoint",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lectopoint par READ FRANCE : outil gratuit pour enseignants, points de contrôle de lecture par partie sur un texte du domaine public, avec le moteur de lecture de READ FRANCE exécuté dans le navigateur.",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "READ FRANCE SAS",
+  "scripts": {
+    "build": "node build.mjs",
+    "engine": "node tools/bundle-engine.mjs",
+    "test": "node build.mjs && node --test tests/*.test.mjs",
+    "e2e": "node build.mjs && node tests/e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.0"
+  }
+}

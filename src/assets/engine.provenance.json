@@ -1,0 +1,143 @@
+{
+  "engine": "VREAD-corp/vread-reading-engine",
+  "commit": "e79976ff329b155b4b55a54652c9a2212c7532bc",
+  "historicalSnapshot": "vread-workflow-def a5df9a949a2fdf44a94280aa6da61875878d2bec (2026-10-07)",
+  "excluded": [
+    "src/prompts/build.ts (replaced by tools/shims/prompts-build.js: the generation prompt stays private)"
+  ],
+  "shims": [
+    "node:crypto -> tools/shims/crypto.js",
+    "node:fs, node:path -> tools/shims/empty.js"
+  ],
+  "bytes": 47202,
+  "files": [
+    {
+      "file": "src/checkpoints/build.ts",
+      "blob": "1367a83d2af7cee5eb4dc80645a96d892c8aa050",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/ingest/segmenter.ts",
+      "blob": "93783ec2e0f98e3f8176aeb08649bfd0e52fc994",
+      "component": "H1",
+      "status": "adapted",
+      "historicalSource": "src/lib/epub/segmenter.ts",
+      "sourceBlobAtA5df9a9": "42e0b15ba3f8"
+    },
+    {
+      "file": "src/ingest/text-language.ts",
+      "blob": "3d5bfe4ec6da40722bb19fea134164725f4b3941",
+      "component": "H1",
+      "status": "adapted",
+      "historicalSource": "src/lib/book/text-language.ts",
+      "sourceBlobAtA5df9a9": "c167b14f1e17"
+    },
+    {
+      "file": "src/prompts/questions-json.ts",
+      "blob": "4d4bfabcd0d5d6d261dda05493d3a2f9245e8650",
+      "component": "H2",
+      "status": "adapted",
+      "historicalSource": "src/lib/ai/questions-json.ts",
+      "sourceBlobAtA5df9a9": "96cac6992a72"
+    },
+    {
+      "file": "src/qa/answer-presence.ts",
+      "blob": "7afc1c7e64c7401062bf797ba0fc261baca727a3",
+      "component": "H3",
+      "status": "verbatim",
+      "historicalSource": "src/lib/ai/answer-presence.ts",
+      "sourceBlobAtA5df9a9": "1848e9013eb8"
+    },
+    {
+      "file": "src/qa/cold-answer.ts",
+      "blob": "a5538c54248d2696f0b39864de0e0f09fc169f1a",
+      "component": "H3",
+      "status": "verbatim",
+      "historicalSource": "src/lib/ai/cold-answer.ts",
+      "sourceBlobAtA5df9a9": "5c9a2cfcda22"
+    },
+    {
+      "file": "src/qa/cold-prompts.ts",
+      "blob": "3daea52f6e494dacc4ec1651603657f7394161d1",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/qa/correction-checks.ts",
+      "blob": "103e72fb06aaaa8ce3163fb5200686f41ed0ac10",
+      "component": "H4",
+      "status": "adapted",
+      "historicalSource": "src/lib/question-reports/correction-checks.ts",
+      "sourceBlobAtA5df9a9": "48bd6135a5e0"
+    },
+    {
+      "file": "src/qa/duplicates.ts",
+      "blob": "cc0474ac7bd7db3c6552c58b4856e3eb905b03ab",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/qa/evidence.ts",
+      "blob": "7944f5b66ae603277e25c87617e7352927844de2",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/qa/integrity.ts",
+      "blob": "ecab8d3c32c687697e466e4ea3fdd452bf59997d",
+      "component": "H3",
+      "status": "adapted",
+      "historicalSource": "src/lib/ai/integrity.ts",
+      "sourceBlobAtA5df9a9": "5e6449e25cb6"
+    },
+    {
+      "file": "src/qa/item-set.ts",
+      "blob": "f08deb075d7b5f2afa72088525b06b064230bedb",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/qa/question-rules.ts",
+      "blob": "4c79ca9cf2506a08216b2bb1f139add484bfefd9",
+      "component": "H3",
+      "status": "verbatim",
+      "historicalSource": "src/lib/contributions/question-rules.ts",
+      "sourceBlobAtA5df9a9": "36e6d8316ade"
+    },
+    {
+      "file": "src/qa/run.ts",
+      "blob": "76fce08ebcb9b7230e6c541dc1edcefa89827e24",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    },
+    {
+      "file": "src/qa/validator.ts",
+      "blob": "ffa73eb80754d74504aab7a6db785c6c936edd0d",
+      "component": "H3",
+      "status": "verbatim",
+      "historicalSource": "src/lib/ai/validator.ts",
+      "sourceBlobAtA5df9a9": "f3349c93c204"
+    },
+    {
+      "file": "src/version.ts",
+      "blob": "af5ece6420073239e0503924adbbc64817086618",
+      "component": "new (Octave for READ FRANCE SAS, 2026-10-16)",
+      "status": "new",
+      "historicalSource": null,
+      "sourceBlobAtA5df9a9": null
+    }
+  ]
+}

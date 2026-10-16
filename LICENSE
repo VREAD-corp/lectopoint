@@ -1,0 +1,8 @@
+Copyright (c) 2026 READ FRANCE SAS. All rights reserved.
+
+The code of this site and the bundled READ FRANCE reading engine (src/assets/engine.js, built from the private
+repository VREAD-corp/vread-reading-engine) are proprietary to READ FRANCE SAS. You may use the published tool at
+https://outils.vread.fr/lectopoint/ free of charge. No other right is granted.
+
+The literary texts in src/texts/ are in the public domain (authors who died before 1925). Their transcriptions come from
+Wikisource and are distributed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
