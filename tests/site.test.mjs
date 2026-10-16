@@ -126,6 +126,6 @@ test('anti-AI grid (lint-ia) on every page', { skip: !process.env.LINT_IA }, () 
     writeFileSync(f, text(h.replace(/<header[\s\S]*?<\/header>|<footer[\s\S]*?<\/footer>/g, ' ')));
     const out = execFileSync('node', [process.env.LINT_IA, f], { encoding: 'utf8' });
     const score = +(out.match(/(\d+)\s*\/\s*100/) || [])[1];
-    assert.ok(score >= 85, `${p}: ${out.slice(0, 400)}`);
+    assert.ok(score >= 85 && /\/100\s+OK/.test(out), `${p}: ${out.slice(0, 400)}`);
   }
 });

@@ -185,7 +185,7 @@ pages.push({
   body: `<h1>Les textes proposés</h1>
 <p class="lead">${TEXTS.length} textes français du domaine public, en version originale, repris de Wikisource. Chaque auteur est mort avant 1925 : ces textes sont libres en France, aux États-Unis et dans les autres pays où nous pourrions être lus.</p>
 <div class="table-wrap"><table class="t"><thead><tr><th>Texte</th><th>Auteur</th><th>Mots</th><th>Niveau courant</th><th>Source</th></tr></thead><tbody>
-${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug)}">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}</td><td><a href="${esc(t.url)}" rel="noopener">${esc(t.source)}</a></td></tr>`).join('\n')}
+${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug)}">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}</td><td><a href="${esc(t.url)}" rel="noopener">${esc(t.source)}</a>${t.guide ? `<br><a href="${esc(t.guide)}">Fiche de lecture (Lectoguide)</a>` : ''}</td></tr>`).join('\n')}
 </tbody></table></div>
 <p>Les transcriptions de Wikisource sont publiées sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="noopener">CC BY-SA 4.0</a> : si vous redistribuez un texte, citez Wikisource. Nous n’avons retouché que la mise en page (titres de navigation retirés, numéros de paragraphes supprimés).</p>
 <p>Vous pouvez aussi coller votre propre texte dans l’outil. Il reste dans votre navigateur : vérifiez seulement que vous avez le droit de l’utiliser en classe.</p>`,
