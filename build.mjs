@@ -113,7 +113,7 @@ const EXEMPLE = u('?texte=le-horla&exemple=1');
 const horlaList = HORLA.map((h) => `<li><p class="repere">Partie ${h.n} (de « ${esc(h.start)} … » à « … ${esc(h.end)} »)</p><p>${esc(h.question)}</p><p class="cle">Corrigé : <strong>${esc(h.answer)}</strong></p></li>`).join('');
 const heroExcerpt = `<figure class="hero-excerpt" data-hero-excerpt>
 <div class="mini-feuille"><p class="mini-titre">Le Horla, Guy de Maupassant · 7 parties de 1 500 mots</p><ol>${horlaList}</ol></div>
-<figcaption>Extrait réel : trois modèles proposés par le moteur pour <em>Le Horla</em> (parties 1, 2 et 4), avant retouche. Vous les gardez ou vous écrivez votre question. <a href="${EXEMPLE}" data-cta data-goal="sample">Ouvrir cet exemple dans l’outil</a></figcaption>
+<figcaption>Extrait réel : trois modèles proposés par le moteur pour <em>Le Horla</em> (parties 1, 2 et 4), avant retouche. Vous les gardez ou vous écrivez votre question. <a href="${EXEMPLE}" data-cta data-goal="sample" data-mesure="sample_click">Ouvrir cet exemple dans l’outil</a></figcaption>
 </figure>`;
 
 const renvois = `<h2 id="kits">Besoin de contrôles déjà rédigés ?</h2>
@@ -143,7 +143,7 @@ pages.push({
 ${heroExcerpt}
 <h1>Des points de contrôle de lecture pour votre classe, prêts à imprimer</h1>
 <p class="lead">Gratuit, sans compte. Lectopoint découpe un texte en parties et propose pour chacune une question dont la réponse tient en un mot pris dans la partie lue.</p>
-<div class="actions hero-cta"><a class="btn" href="#etape-1" data-cta>Choisir un texte</a><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample">Voir l’exemple du Horla</a></div>
+<div class="actions hero-cta"><a class="btn" href="#etape-1" data-cta>Choisir un texte</a><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample" data-mesure="sample_click">Voir l’exemple du Horla</a></div>
 <p>Vous gardez ou réécrivez chaque question, l’outil vérifie les règles pendant que vous tapez, puis vous imprimez la fiche élève et son corrigé. La correction prend quelques secondes par copie : un mot par partie.</p>
 <p class="muted">Vous obtenez une fiche élève et son corrigé à imprimer, un tableau CSV et un fichier JSON. Tout se passe dans votre navigateur : le texte, les questions et les réponses ne sont envoyés nulle part.</p>
 </div>
@@ -184,7 +184,7 @@ ${heroExcerpt}
 <section id="exemple"><h2>Un exemple : <em>Le Horla</em> en 7 parties</h2>
 <p>Voici ce que le moteur propose, sans retouche, pour trois des sept parties de la nouvelle de Maupassant. Chaque modèle est une phrase du passage de référence avec un mot retiré ; le mot retiré est la réponse. Ces modèles se vérifient vite mais se devinent parfois : sur la partie 1, « dors » se trouve presque sans lire. Remplacez-les par vos questions (qui, quel objet, quel lieu) sur un détail qui compte dans l’histoire.</p>
 <div class="mini-feuille"><ol>${horlaList}</ol></div>
-<p><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample">Ouvrir Le Horla dans l’outil, déjà découpé</a></p>
+<p><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample" data-mesure="sample_click">Ouvrir Le Horla dans l’outil, déjà découpé</a></p>
 </section>
 <section id="contenu"><h2>Ce que contient la fiche imprimée</h2>
 <ul>
@@ -248,7 +248,7 @@ pages.push({
 <p class="lead">${TEXTS.length} textes français du domaine public, en version originale, repris de Wikisource, de la 6e à la première. Chaque auteur est mort avant 1925 : ces textes sont libres en France, aux États-Unis et dans les autres pays où nous pourrions être lus. Cliquez sur un titre : il s’ouvre dans l’outil gratuit, déjà découpé en parties.</p>
 <p class="actions"><a class="btn" href="${u('#etape-1')}" data-cta>Ouvrir l’outil</a></p>
 <div class="table-wrap"><table class="t"><thead><tr><th>Texte</th><th>Auteur</th><th>Mots</th><th>Niveau courant</th><th>Pour aller plus loin</th></tr></thead><tbody>
-${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug + '&exemple=1')}" data-cta data-goal="sample">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}${t.programme ? `<br><span class="small">${esc(t.programme)}</span>` : ''}</td><td>${[t.guide ? `<a href="${esc(t.guide)}">Fiche de lecture (Lectoguide)</a>` : '', t.kit ? `<a href="${esc(t.kit)}">${esc(t.kitLabel)}</a>` : '', `<a href="${esc(t.url)}" rel="noopener">Texte source</a> : ${esc(t.source)}`].filter(Boolean).join('<br>')}</td></tr>`).join('\n')}
+${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug + '&exemple=1')}" data-cta data-goal="sample" data-mesure="sample_click">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}${t.programme ? `<br><span class="small">${esc(t.programme)}</span>` : ''}</td><td>${[t.guide ? `<a href="${esc(t.guide)}">Fiche de lecture (Lectoguide)</a>` : '', t.kit ? `<a href="${esc(t.kit)}">${esc(t.kitLabel)}</a>` : '', `<a href="${esc(t.url)}" rel="noopener">Texte source</a> : ${esc(t.source)}`].filter(Boolean).join('<br>')}</td></tr>`).join('\n')}
 </tbody></table></div>
 </section>
 <p>Les transcriptions de Wikisource sont publiées sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="noopener">CC BY-SA 4.0</a> : si vous redistribuez un texte, citez Wikisource. Nous n’avons retouché que la mise en page (titres de navigation retirés, numéros de paragraphes supprimés).</p>
