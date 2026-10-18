@@ -25,10 +25,11 @@
       sel.appendChild(o);
     });
     var want = new URLSearchParams(location.search).get('texte');
-    if (want && list.some(function (t) { return t.slug === want; })) { sel.value = want; pick(); }
+    if (want && list.some(function (t) { return t.slug === want; })) { sel.value = want; pick(new URLSearchParams(location.search).get('exemple') === '1'); }
   }).catch(function () { info.textContent = 'La liste des textes n’a pas pu être chargée. Vous pouvez coller un texte.'; });
 
-  function pick() {
+  // auto: the « exemple » links (?texte=<slug>&exemple=1) also cut the text, without counting a tool use.
+  function pick(auto) {
     var t = state.library.filter(function (x) { return x.slug === sel.value; })[0];
     if (!t) return;
     info.textContent = 'Chargement…';
@@ -36,9 +37,10 @@
       area.value = txt; tIn.value = t.title; aIn.value = t.author;
       info.innerHTML = esc(t.title) + ', ' + esc(t.author) + ' (' + esc(t.published) + '). Source : <a href="' + esc(t.url) + '" rel="noopener">' + esc(t.source) + '</a>.';
       suggestSize();
+      if (auto === true) decouper(true);
     });
   }
-  sel.addEventListener('change', pick);
+  sel.addEventListener('change', function () { pick(false); });
   area.addEventListener('input', suggestSize);
 
   var sizeSel = $('#lp-taille');
@@ -65,7 +67,8 @@
       .filter(function (u) { return words(u.text) >= 40; });
   }
 
-  $('#lp-decouper').addEventListener('click', function () {
+  $('#lp-decouper').addEventListener('click', function () { decouper(false); });
+  function decouper(auto) {
     var text = area.value.trim(), msg = $('#lp-decoupe-msg');
     msg.textContent = '';
     if (words(text) < 300) { msg.textContent = 'Il faut au moins 300 mots de texte.'; return; }
@@ -89,10 +92,10 @@
       return { segment: s.index + 1, question: fb ? fb.question : '', answer: fb ? fb.answer : '', evidence: fb ? fb.evidence : '', origin: 'fallback', autoEvidence: true };
     });
     render();
-    goal('tool');
+    if (!auto) goal('tool');
     $('#etape-3').hidden = false; $('#etape-4').hidden = false;
     $('#etape-3').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  }
 
   // ---------------------------------------------------------------- cards
   var STARTERS = ['Qui ', 'Quel objet ', 'Où ', 'Comment s’appelle ', 'Que trouve '];

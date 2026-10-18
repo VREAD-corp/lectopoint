@@ -29,6 +29,15 @@ BASE_URL=https://outils.vread.fr/lectopoint/ node tests/e2e.mjs    # same, live
 Site standards of READ FRANCE: `mesure.js` (v:2, cookieless, bots and `octave_notrack=1` counted apart) and `cro.js`,
 byte-identical to `octave-checkout/gas/web`, posting to the octave-checkout Apps Script (site `lectopoint` whitelisted;
 events `view`, `tool_use` = « Proposer les parties », `free_download` = an export, `cta_click` = a link to Lectoclasse,
-Chapter Checks or Vread pour les écoles). A/B `lp-titre` (headline a/b by day, goals `tool` and `download`).
+Chapter Checks or Vread pour les écoles). A/B `rd-hero` (POOLED-READING-01, since 2026-10-19, by tab, home only, shared
+with the 6 other reading sites and analysed pooled in vread-revenue-lab): b shows in the first screen three checkpoints the
+engine proposed for *Le Horla* (verbatim; `tests/site.test.mjs` re-runs the engine to check them). Goals: `sample` (an
+« exemple » link, `?texte=<slug>&exemple=1` opens the text already cut, via `assets/goals.js`), `tool`, `download`.
+`lp-titre` (headline a/b by day) was stopped on 2026-10-18 with 0 exposures because it targeted the same hero.
+
+Sitemap `lastmod` is the real date of each page's last content change: `src/lastmod.json` keeps a hash of each page's
+title, description and body; the build stamps today's date (Paris) when it changes, and the CI test fails if the updated
+file was not committed. Inner pages carry a visible breadcrumb and a BreadcrumbList; the home a WebApplication (free) and a
+FAQPage matching the visible FAQ; the method page an Article (author READ FRANCE SAS, https://outils.vread.fr/a-propos/).
 
 © 2026 READ FRANCE SAS. See LICENSE.

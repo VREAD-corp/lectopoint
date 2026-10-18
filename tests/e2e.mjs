@@ -83,6 +83,36 @@ for (const width of [390, 1280]) {
   await ctx.close();
 }
 
+for (const [w, h] of [[375, 667], [1280, 800]]) {
+  await step(`${w}: rd-hero a hides the excerpt, b shows it with the CTA still in the first screen`, async () => {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+    const page = await ctx.newPage();
+    await page.goto(BASE + '?octave_notrack=1&hero=a');
+    assert.equal(await page.getAttribute('html', 'data-xp-rd-hero'), 'a');
+    assert.equal(await page.isVisible('[data-hero-excerpt]'), false);
+    await page.goto(BASE + '?octave_notrack=1&hero=b');
+    assert.equal(await page.getAttribute('html', 'data-xp-rd-hero'), 'b');
+    assert.equal(await page.isVisible('[data-hero-excerpt]'), true);
+    assert.match(await page.textContent('[data-hero-excerpt]'), /Bougival/);
+    const cta = await page.locator('.hero-cta .btn').first().boundingBox();
+    assert.ok(cta.y + cta.height <= h, `CTA bottom ${cta.y + cta.height} > ${h}`);
+    const sw = await page.evaluate(() => document.documentElement.scrollWidth);
+    assert.ok(sw <= w + 1, `scrollWidth ${sw}`);
+    await ctx.close();
+  });
+}
+
+await step('the Le Horla example link opens the tool already cut into the 7 parts of the excerpt', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE + '?octave_notrack=1&texte=le-horla&exemple=1');
+  await page.waitForSelector('.partie');
+  assert.equal(await page.locator('.partie').count(), 7);
+  assert.match(await page.locator('.partie').nth(3).locator('[data-f="question"]').inputValue(), /Bougival|_____/);
+  assert.equal(await page.locator('.partie').nth(3).locator('[data-f="answer"]').inputValue(), 'Bougival');
+  await ctx.close();
+});
+
 await step('title-based cutting on a play (acts)', async () => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();

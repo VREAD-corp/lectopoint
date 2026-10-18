@@ -7,7 +7,10 @@
     "published": "1697",
     "level": "6e",
     "source": "Wikisource, Contes de Perrault, éd. Casterman 1902 (orthographe moderne) ; moralité d’après l’édition originale de 1697",
-    "url": "https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)/Le_Petit_Poucet"
+    "url": "https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)/Le_Petit_Poucet",
+    "guide": "https://outils.vread.fr/lectoguide/contes-de-perrault/",
+    "kit": "https://outils.vread.fr/lectoclasse/college/",
+    "kitLabel": "Rallye-lecture collège, exemple gratuit (Lectoclasse)"
   },
   {
     "slug": "la-chevre-de-monsieur-seguin",
@@ -93,6 +96,9 @@
     "level": "Première (bac de français)",
     "source": "Wikisource, d'après Œuvres de P. Corneille, édition Ch. Marty-Laveaux, Hachette, 1862, tome IV",
     "url": "https://fr.wikisource.org/wiki/Le_Menteur_(Corneille,_Marty-Laveaux,_1862)",
-    "guide": "https://outils.vread.fr/lectoguide/le-menteur/"
+    "guide": "https://outils.vread.fr/lectoguide/le-menteur/",
+    "kit": "https://outils.vread.fr/lectoclasse/kits/le-menteur/",
+    "kitLabel": "Kit complet gratuit (Lectoclasse)",
+    "programme": "Au programme de l’épreuve anticipée de français de juin 2027 (BO n° 30 du 24 juillet 2025)"
   }
 ]

@@ -1,7 +1,8 @@
 // Builds the static site into dist/ (GitHub Pages, served at https://outils.vread.fr/lectopoint/).
 // Inputs: src/assets (app, styles, the engine bundle, vendored mesure.js / cro.js), src/texts (public-domain texts).
 // Env: SITE_BASE (default /lectopoint/), SITE_ORIGIN (default https://outils.vread.fr), OUT (default dist).
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,7 +12,13 @@ const BASE = process.env.SITE_BASE || '/lectopoint/';
 const ORIGIN = process.env.SITE_ORIGIN || 'https://outils.vread.fr';
 const TRACK_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 const CONTACT = 'octave@vread.fr';
-const UPDATED = '2026-10-16';
+const ABOUT = 'https://outils.vread.fr/a-propos/';
+const PUBLISHED = '2026-10-16';
+// Real « last content change » per page: src/lastmod.json keeps {path: {sha, date}}. When a page's title, description or
+// body changes, the build stamps today's date (Paris); tests/site.test.mjs fails if the committed file is out of date.
+const LASTMOD_FILE = join(ROOT, 'src/lastmod.json');
+const LASTMOD = existsSync(LASTMOD_FILE) ? JSON.parse(readFileSync(LASTMOD_FILE, 'utf8')) : {};
+const TODAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const PROV = JSON.parse(readFileSync(join(ROOT, 'src/assets/engine.provenance.json'), 'utf8'));
 const TEXTS = JSON.parse(readFileSync(join(ROOT, 'src/texts/index.json'), 'utf8')).map((t) => ({
   ...t, words: readFileSync(join(ROOT, 'src/texts', t.slug + '.txt'), 'utf8').split(/\s+/).filter(Boolean).length,
@@ -39,7 +46,10 @@ const CSP = `default-src 'self'; script-src 'self'; connect-src 'self' https://s
 function layout(pg) {
   const canonical = abs(pg.path);
   const nav = NAV.map(([p, t]) => `<li><a href="${u(p)}"${p === pg.path ? ' aria-current="page"' : ''}>${t}</a></li>`).join('');
-  const ld = pg.ld ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [ORG, ...pg.ld] }).replace(/</g, '\\u003c')}</script>\n` : '';
+  const crumbs = pg.path ? [['outils.vread.fr', 'https://outils.vread.fr/'], ['Lectopoint', abs('')], [pg.crumb || pg.title, canonical]] : [['outils.vread.fr', 'https://outils.vread.fr/'], ['Lectopoint', abs('')]];
+  const bcLd = { '@type': 'BreadcrumbList', itemListElement: crumbs.map(([name, item], i) => ({ '@type': 'ListItem', position: i + 1, name, item })) };
+  const bcNav = pg.path && !pg.noindex ? `<nav class="ariane" aria-label="Fil d’Ariane"><ol>${crumbs.map(([n, h], i) => i === crumbs.length - 1 ? `<li aria-current="page">${esc(n)}</li>` : `<li><a href="${h}">${esc(n)}</a></li>`).join('')}</ol></nav>\n` : '';
+  const ld = pg.ld || !pg.noindex ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [ORG, ...(pg.ld || []), ...(pg.noindex ? [] : [bcLd])] }).replace(/</g, '\\u003c')}</script>\n` : '';
   return typo(`<!doctype html>
 <html lang="fr">
 <head>
@@ -57,8 +67,9 @@ ${pg.noindex ? '<meta name="robots" content="noindex">\n' : `<link rel="canonica
 <link rel="icon" href="${u('assets/favicon.svg')}" type="image/svg+xml">
 <link rel="stylesheet" href="${u('assets/style.css')}">
 <script src="${u('assets/xp.js')}"></script>
-<script src="${u('cro.js')}" data-site="lectopoint" data-api="${TRACK_API}" data-hosts="outils.vread.fr" data-cta="[data-mesure], .btn"></script>
+<script src="${u('cro.js')}" data-site="lectopoint" data-api="${TRACK_API}" data-hosts="outils.vread.fr" data-cta="[data-mesure], .btn, [data-cta]"></script>
 <script src="${u('mesure.js')}" defer></script>
+<script src="${u('assets/goals.js')}" defer></script>
 ${ld}</head>
 <body>
 <a class="skip" href="#main">Aller au contenu</a>
@@ -67,11 +78,12 @@ ${ld}</head>
 <nav aria-label="Principale"><ul>${nav}</ul></nav>
 </div></header>
 <main id="main"><div class="wrap">
-${pg.body}
+${bcNav}${pg.body}
 </div></main>
 <footer class="site"><div class="wrap">
 <p><strong>Lectopoint</strong> est une activité de READ FRANCE, l’éditeur de Vread. READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. Contact : <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
 <p>Outil gratuit, sans compte. Ressource privée, sans lien avec le ministère de l’Éducation nationale.</p>
+<p>Textes de la page écrits par Octave, l’agent IA de READ FRANCE ; publication par les fondateurs, Tanguy Warsmann et Vincent Cance. <a href="${ABOUT}">Qui fait ce site, et comment</a>.</p>
 <ul><li><a href="${u('textes/')}">Textes et droits</a></li><li><a href="${u('confidentialite/')}">Confidentialité</a></li><li><a href="${u('mentions-legales/')}">Mentions légales</a></li><li><a href="https://outils.vread.fr/lectoguide/">Lectoguide, les fiches de lecture</a></li></ul>
 </div></footer>
 ${pg.scripts || ''}<div id="impression" aria-hidden="true"></div>
@@ -89,6 +101,21 @@ const LINKS = {
   lectoguide: 'https://outils.vread.fr/lectoguide/',
 };
 
+// Real engine output (vread-reading-engine bundle in src/assets/engine.js, fallbackCheckpoint) for Le Horla cut into
+// 1 500-word parts (the size the tool picks for it): parts 1, 2 and 4, verbatim. tests/site.test.mjs re-runs the engine
+// and checks these strings, so the excerpt cannot drift from what the tool produces.
+const HORLA = [
+  { n: 1, start: '8 mai. — Quelle journée admirable ! J’ai', end: 'rentre. Je suis guéri. J’ai fait d’ailleurs une', question: 'Quel mot manque dans ce passage (Partie 1) : « Je _____ — longtemps — deux ou trois heures — puis un rêve — non — un cauchemar m’étreint. » ?', answer: 'dors' },
+  { n: 2, start: 'excursion charmante. J’ai visité le mont Saint-Michel que', end: 'moins que je ne sois vraiment somnambule, ou', question: 'Quel mot manque dans ce passage (Partie 2) : « — Qu’est-ce que vous avez, _____ ? » ?', answer: 'Jean' },
+  { n: 4, start: 'le jure. Elle s’écria : — Oh !', end: 'Quelqu’un possède mon âme et la gouverne !', question: 'Quel mot manque dans ce passage (Partie 4) : « — J’ai été dîner à _____, puis j’ai passé la soirée au bal des canotiers. » ?', answer: 'Bougival' },
+];
+const EXEMPLE = u('?texte=le-horla&exemple=1');
+const horlaList = HORLA.map((h) => `<li><p class="repere">Partie ${h.n} (de « ${esc(h.start)} … » à « … ${esc(h.end)} »)</p><p>${esc(h.question)}</p><p class="cle">Corrigé : <strong>${esc(h.answer)}</strong></p></li>`).join('');
+const heroExcerpt = `<figure class="hero-excerpt" data-hero-excerpt>
+<div class="mini-feuille"><p class="mini-titre">Le Horla, Guy de Maupassant · 7 parties de 1 500 mots</p><ol>${horlaList}</ol></div>
+<figcaption>Extrait réel : trois modèles proposés par le moteur pour <em>Le Horla</em> (parties 1, 2 et 4), avant retouche. Vous les gardez ou vous écrivez votre question. <a href="${EXEMPLE}" data-cta data-goal="sample">Ouvrir cet exemple dans l’outil</a></figcaption>
+</figure>`;
+
 const renvois = `<h2 id="kits">Besoin de contrôles déjà rédigés ?</h2>
 <div class="renvois">
 <div class="renvoi"><h3><a href="${LINKS.lectoclasse}" data-mesure="cta_click">Lectoclasse</a></h3><p>Kits de lecture prêts à imprimer sur les œuvres du domaine public du bac de français (épreuve de juin 2027) : questions par acte ou par chapitre, corrigés, fiche d’oral. Vendus aux établissements hors Union européenne.</p><p><a href="${LINKS.lectoclasseFree}" data-mesure="cta_click">Le kit complet du Menteur de Corneille est gratuit pour tous.</a></p></div>
@@ -96,16 +123,31 @@ const renvois = `<h2 id="kits">Besoin de contrôles déjà rédigés ?</h2>
 <div class="renvoi"><h3><a href="${LINKS.ecoles}" data-mesure="cta_click">Vread pour les écoles</a></h3><p>Pour suivre une classe livre par livre dans l’application, avec un point de contrôle toutes les 30 à 40 pages, plutôt qu’avec une fiche papier.</p></div>
 </div>`;
 
+const FAQ = [
+  ['Lectopoint est-il gratuit ?', 'Oui. L’outil est gratuit et sans compte. Il n’y a pas de version payante de Lectopoint.'],
+  ['Puis-je distribuer les fiches à mes élèves et à mes collègues ?', 'Oui. Les questions que vous rédigez vous appartiennent. Si vous redistribuez aussi le texte d’un classique proposé ici, citez Wikisource, dont la transcription est sous licence CC BY-SA 4.0.'],
+  ['Mon texte est-il envoyé quelque part ?', 'Non. Le texte, les questions et les réponses restent dans votre navigateur et disparaissent quand vous fermez l’onglet. Seuls des compteurs anonymes de visite sont enregistrés, voir la page Confidentialité.'],
+  ['L’outil écrit-il les questions à ma place ?', 'Il propose pour chaque partie un modèle de question à trous et des mots-réponses possibles, tous pris dans le texte. La question finale est la vôtre : l’outil vérifie sa forme et la présence de la réponse dans la partie, pas sa valeur pédagogique.'],
+];
+
 pages.push({
   path: '',
   title: 'Lectopoint : points de contrôle de lecture à imprimer, gratuit',
   description: 'Collez un texte du domaine public ou choisissez un classique : Lectopoint le découpe en parties, propose un point de contrôle par partie et vérifie vos questions. Sans envoi, sans compte.',
   ld: [{ '@type': 'WebApplication', name: 'Lectopoint par READ FRANCE', url: abs(''), applicationCategory: 'EducationalApplication', operatingSystem: 'Navigateur web',
     inLanguage: 'fr', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, publisher: { '@id': ORG['@id'] }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
-    description: 'Outil gratuit pour enseignants : découpage d’un texte en parties, un point de contrôle de lecture par partie (question ouverte, réponse d’un mot présente dans le texte), règles de forme vérifiées dans le navigateur, export imprimable ou CSV.' }],
-  body: `<h1 data-xp-titre>Des points de contrôle de lecture pour votre classe, prêts à imprimer</h1>
-<p class="lead">Choisissez un texte, Lectopoint le découpe en parties et propose un point de contrôle par partie : une question ouverte dont la réponse tient en un mot, un mot qui figure dans la partie lue. Vous écrivez ou corrigez les questions, l’outil vérifie les règles au fur et à mesure, puis vous imprimez la fiche élève et son corrigé.</p>
-<p class="muted">Tout se passe dans votre navigateur. Le texte, les questions et les réponses ne sont envoyés nulle part. Il n’y a ni compte, ni élève à inscrire.</p>
+    creator: { '@id': ORG['@id'] }, featureList: ['Découpage du texte en parties', 'Un point de contrôle par partie', 'Vérification des règles dans le navigateur', 'Fiche élève et corrigé à imprimer', 'Export CSV et JSON'],
+    description: 'Outil gratuit pour enseignants : découpage d’un texte en parties, un point de contrôle de lecture par partie (question ouverte, réponse d’un mot présente dans le texte), règles de forme vérifiées dans le navigateur, export imprimable ou CSV.' },
+    { '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }],
+  body: `<section class="hero" id="haut"><div class="hero-texte">
+${heroExcerpt}
+<h1>Des points de contrôle de lecture pour votre classe, prêts à imprimer</h1>
+<p class="lead">Gratuit, sans compte. Lectopoint découpe un texte en parties et propose pour chacune une question dont la réponse tient en un mot pris dans la partie lue.</p>
+<div class="actions hero-cta"><a class="btn" href="#etape-1" data-cta>Choisir un texte</a><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample">Voir l’exemple du Horla</a></div>
+<p>Vous gardez ou réécrivez chaque question, l’outil vérifie les règles pendant que vous tapez, puis vous imprimez la fiche élève et son corrigé. La correction prend quelques secondes par copie : un mot par partie.</p>
+<p class="muted">Vous obtenez une fiche élève et son corrigé à imprimer, un tableau CSV et un fichier JSON. Tout se passe dans votre navigateur : le texte, les questions et les réponses ne sont envoyés nulle part.</p>
+</div>
+</section>
 <div id="outil" data-base="${BASE}">
 <section class="etape" id="etape-1"><h2><span>1</span>Le texte</h2>
 <label for="lp-texte">Un classique du domaine public</label>
@@ -139,9 +181,26 @@ pages.push({
 <p class="small">Le CSV s’ouvre dans un tableur (séparateur point-virgule). Le JSON suit le format read-france.checkpoints/1 du moteur de lecture de READ FRANCE.</p>
 </section>
 </div>
+<section id="exemple"><h2>Un exemple : <em>Le Horla</em> en 7 parties</h2>
+<p>Voici ce que le moteur propose, sans retouche, pour trois des sept parties de la nouvelle de Maupassant. Chaque modèle est une phrase du passage de référence avec un mot retiré ; le mot retiré est la réponse. Ces modèles se vérifient vite mais se devinent parfois : sur la partie 1, « dors » se trouve presque sans lire. Remplacez-les par vos questions (qui, quel objet, quel lieu) sur un détail qui compte dans l’histoire.</p>
+<div class="mini-feuille"><ol>${horlaList}</ol></div>
+<p><a class="btn second" href="${EXEMPLE}" data-cta data-goal="sample">Ouvrir Le Horla dans l’outil, déjà découpé</a></p>
+</section>
+<section id="contenu"><h2>Ce que contient la fiche imprimée</h2>
+<ul>
+<li>La fiche élève : le titre et l’auteur, une ligne nom, classe et date, la consigne, puis pour chaque partie ses premiers et ses derniers mots, la question et une ligne de réponse.</li>
+<li>Le corrigé, sur une page à part : la question, le mot attendu et la phrase du texte qui le contient.</li>
+<li>Le tableau CSV (une ligne par partie : libellé, début, fin, nombre de mots, question, réponse, passage, règles en échec), à ouvrir dans un tableur.</li>
+<li>Le fichier JSON au format read-france.checkpoints/1 du moteur de lecture de READ FRANCE.</li>
+</ul>
+</section>
 <h2>Ce que l’outil vérifie, et ce qu’il ne vérifie pas</h2>
 <p>Il vérifie la forme de chaque question (35 à 160 caractères, un point d’interrogation, pas de question fermée en oui ou non, pas de choix multiple), la réponse (un seul mot, ni générique comme « maison » ou « roi », absent de la question, présent dans le passage de référence de la partie), le passage cité et les questions trop proches d’une partie à l’autre. Ce sont les règles qui servent à écrire les questions de l’application Vread.</p>
 <p>Il ne vérifie pas qu’une question est impossible à deviner sans avoir lu : pour cela, faites-la lire à un collègue qui ne connaît pas le texte. S’il trouve la réponse, changez de détail. <a href="${u('methode/')}">La méthode en détail</a>.</p>
+<section id="faq"><h2>Questions fréquentes</h2>
+${FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('\n')}
+</section>
+<p class="actions"><a class="btn" href="#etape-1" data-cta>Préparer une fiche</a></p>
 ${renvois}`,
   scripts: `<script src="${u('assets/engine.js')}"></script>\n<script src="${u('assets/app.js')}"></script>\n`,
 });
@@ -150,7 +209,9 @@ pages.push({
   path: 'methode/',
   title: 'La méthode Lectopoint : une question par partie, une réponse d’un mot',
   description: 'Les règles des points de contrôle de lecture de Lectopoint : découpage, passage de référence, question ouverte, réponse d’un mot présente dans le texte, contrôles automatiques et leurs limites.',
-  ld: [{ '@type': 'WebPage', name: 'La méthode Lectopoint', url: abs('methode/'), inLanguage: 'fr', dateModified: UPDATED, publisher: { '@id': ORG['@id'] } }],
+  crumb: 'La méthode',
+  ld: (pg) => [{ '@type': 'Article', headline: 'Une question par partie, une réponse d’un mot', name: 'La méthode Lectopoint', url: abs('methode/'), mainEntityOfPage: abs('methode/'), inLanguage: 'fr',
+    datePublished: PUBLISHED, dateModified: pg.lastmod, author: { '@type': 'Organization', name: 'READ FRANCE SAS', url: ABOUT }, publisher: { '@id': ORG['@id'] }, about: 'Points de contrôle de lecture' }],
   body: `<h1>Une question par partie, une réponse d’un mot</h1>
 <p class="lead">Lectopoint applique au papier la méthode des points de contrôle de l’application Vread : on avance dans le texte partie par partie, et chaque partie se valide par une question précise sur ce qui vient d’être lu.</p>
 <h2>Le découpage</h2>
@@ -179,35 +240,41 @@ ${renvois}`,
 
 pages.push({
   path: 'textes/',
+  crumb: 'Les textes',
   title: 'Les textes de Lectopoint : classiques du domaine public et sources',
   description: 'Les textes proposés dans Lectopoint, leurs sources (Wikisource) et leur statut : auteurs morts avant 1925, texte original, transcription sous licence CC BY-SA 4.0.',
   ld: [{ '@type': 'ItemList', name: 'Textes du domaine public proposés dans Lectopoint', itemListElement: TEXTS.map((t, i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'CreativeWork', name: t.title, author: { '@type': 'Person', name: t.author }, datePublished: String(t.published).slice(0, 4), inLanguage: 'fr' } })) }],
-  body: `<h1>Les textes proposés</h1>
-<p class="lead">${TEXTS.length} textes français du domaine public, en version originale, repris de Wikisource. Chaque auteur est mort avant 1925 : ces textes sont libres en France, aux États-Unis et dans les autres pays où nous pourrions être lus.</p>
-<div class="table-wrap"><table class="t"><thead><tr><th>Texte</th><th>Auteur</th><th>Mots</th><th>Niveau courant</th><th>Source</th></tr></thead><tbody>
-${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug)}">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}</td><td><a href="${esc(t.url)}" rel="noopener">${esc(t.source)}</a>${t.guide ? `<br><a href="${esc(t.guide)}">Fiche de lecture (Lectoguide)</a>` : ''}</td></tr>`).join('\n')}
+  body: `<section id="liste"><h1>Textes du domaine public pour vos points de contrôle de lecture</h1>
+<p class="lead">${TEXTS.length} textes français du domaine public, en version originale, repris de Wikisource, de la 6e à la première. Chaque auteur est mort avant 1925 : ces textes sont libres en France, aux États-Unis et dans les autres pays où nous pourrions être lus. Cliquez sur un titre : il s’ouvre dans l’outil gratuit, déjà découpé en parties.</p>
+<p class="actions"><a class="btn" href="${u('#etape-1')}" data-cta>Ouvrir l’outil</a></p>
+<div class="table-wrap"><table class="t"><thead><tr><th>Texte</th><th>Auteur</th><th>Mots</th><th>Niveau courant</th><th>Pour aller plus loin</th></tr></thead><tbody>
+${TEXTS.map((t) => `<tr><td><a href="${u('?texte=' + t.slug + '&exemple=1')}" data-cta data-goal="sample">${esc(t.title)}</a> (${esc(t.published)})</td><td>${esc(t.author)} (${esc(t.authorDates)})</td><td>${nf(t.words)}</td><td>${esc(t.level)}${t.programme ? `<br><span class="small">${esc(t.programme)}</span>` : ''}</td><td>${[t.guide ? `<a href="${esc(t.guide)}">Fiche de lecture (Lectoguide)</a>` : '', t.kit ? `<a href="${esc(t.kit)}">${esc(t.kitLabel)}</a>` : '', `<a href="${esc(t.url)}" rel="noopener">Texte source</a> : ${esc(t.source)}`].filter(Boolean).join('<br>')}</td></tr>`).join('\n')}
 </tbody></table></div>
+</section>
 <p>Les transcriptions de Wikisource sont publiées sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="noopener">CC BY-SA 4.0</a> : si vous redistribuez un texte, citez Wikisource. Nous n’avons retouché que la mise en page (titres de navigation retirés, numéros de paragraphes supprimés).</p>
-<p>Vous pouvez aussi coller votre propre texte dans l’outil. Il reste dans votre navigateur : vérifiez seulement que vous avez le droit de l’utiliser en classe.</p>`,
+<p>Vous pouvez aussi coller votre propre texte dans l’outil. Il reste dans votre navigateur : vérifiez seulement que vous avez le droit de l’utiliser en classe.</p>
+<p>Les fiches de lecture de Lectoguide résument chaque œuvre et donnent des repères pour la classe. Les kits de Lectoclasse sont des contrôles déjà rédigés, avec corrigés, sur les œuvres du bac de français et pour le collège.</p>`,
 });
 
 pages.push({
   path: 'confidentialite/',
+  crumb: 'Confidentialité',
   title: 'Confidentialité : Lectopoint par READ FRANCE',
   description: 'Lectopoint ne reçoit ni le texte, ni les questions, ni les réponses. La mesure d’audience est agrégée, sans cookie ni identifiant.',
   body: `<h1>Confidentialité</h1>
 <p class="lead">Le texte que vous collez ou choisissez, vos questions et vos réponses restent dans votre navigateur. Lectopoint ne les envoie à aucun serveur et ne les conserve pas : fermez l’onglet et ils disparaissent.</p>
 <h2>Mesure d’audience</h2>
-<p>Pour savoir si l’outil sert, nous comptons de façon agrégée, par jour et par page : les pages vues, les clics sur « Proposer les parties », les exports (impression, CSV, JSON), les clics vers les autres ressources de READ FRANCE, la profondeur de lecture de la page, le temps avant le premier clic par tranche, les erreurs techniques et les indicateurs de vitesse. Pour le test du titre de la page, nous comptons quelle version a été affichée.</p>
+<p>Pour savoir si l’outil sert, nous comptons de façon agrégée, par jour et par page : les pages vues, les clics sur « Proposer les parties », les exports (impression, CSV, JSON), les clics vers les autres ressources de READ FRANCE, la profondeur de lecture de la page, le temps avant le premier clic par tranche, les erreurs techniques et les indicateurs de vitesse. Pour le test de la présentation du haut de la page d’accueil, nous comptons quelle version a été affichée.</p>
 <p>Ces compteurs ne contiennent ni cookie, ni adresse IP, ni identifiant, ni ce que vous tapez. Le navigateur envoie seulement le nom du site, la page, l’événement, le domaine du site d’où vous venez, d’éventuels paramètres de campagne (utm) et le type d’écran (mobile ou ordinateur). Le stockage de session du navigateur garde, le temps de l’onglet, la version du test affichée. Si votre navigateur envoie le signal « Do Not Track » ou « Global Privacy Control », rien n’est envoyé.</p>
 <p>Les compteurs sont enregistrés dans un tableur Google de READ FRANCE (Google Apps Script). Cette mesure est exemptée de consentement au sens des lignes directrices de la CNIL sur les traceurs, parce qu’elle est strictement limitée à des statistiques anonymes du site.</p>
 <h2>Contact</h2>
 <p>READ FRANCE SAS, 11 rue Rouvet, 75019 Paris. <a href="mailto:${CONTACT}">${CONTACT}</a>. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
-<p class="small">Mise à jour : 16 octobre 2026.</p>`,
+<p class="small">Mise à jour : 18 octobre 2026.</p>`,
 });
 
 pages.push({
   path: 'mentions-legales/',
+  crumb: 'Mentions légales',
   title: 'Mentions légales : Lectopoint par READ FRANCE',
   description: 'Éditeur, hébergeur et conditions d’utilisation de Lectopoint, outil gratuit de READ FRANCE SAS pour préparer des points de contrôle de lecture.',
   body: `<h1>Mentions légales</h1>
@@ -227,6 +294,15 @@ pages.push({
 });
 
 // ------------------------------------------------------------------------------------------------ write
+const nextLastmod = {};
+for (const pg of pages) {
+  const sha = createHash('sha256').update(JSON.stringify([pg.title, pg.description, pg.body])).digest('hex').slice(0, 16);
+  const prev = LASTMOD[pg.path || '/'];
+  pg.lastmod = prev && prev.sha === sha ? prev.date : TODAY;
+  nextLastmod[pg.path || '/'] = { sha, date: pg.lastmod };
+  if (typeof pg.ld === 'function') pg.ld = pg.ld(pg);
+}
+if (JSON.stringify(nextLastmod) !== JSON.stringify(LASTMOD) && !process.env.CI) writeFileSync(LASTMOD_FILE, JSON.stringify(nextLastmod, null, 2) + '\n');
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 for (const pg of pages) {
@@ -239,6 +315,6 @@ for (const f of ['mesure.js', 'cro.js']) cpSync(join(ROOT, 'src/assets', f), joi
 mkdirSync(join(OUT, 'textes/data'), { recursive: true });
 for (const t of TEXTS) cpSync(join(ROOT, 'src/texts', t.slug + '.txt'), join(OUT, 'textes/data', t.slug + '.txt'));
 writeFileSync(join(OUT, 'textes/data/index.json'), JSON.stringify(TEXTS) + '\n');
-writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${abs(p.path)}</loc><lastmod>${UPDATED}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${abs(p.path)}</loc><lastmod>${p.lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
 console.log(`dist: ${pages.length} pages, ${TEXTS.length} texts`);
